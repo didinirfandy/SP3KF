@@ -1020,6 +1020,7 @@ function Output($dest='', $name='', $isUTF8=false)
 			// Save to local file
 			if(!file_put_contents($name,$this->buffer))
 				$this->Error('Unable to create output file: '.$name);
+				
 			break;
 		case 'S':
 			// Return as a string

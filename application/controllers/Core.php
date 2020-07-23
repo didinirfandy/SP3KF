@@ -1,4 +1,5 @@
 <?php
+defined('BASEPATH') or exit('No direct script access allowed');
 
 class core extends CI_Controller
 {
@@ -8,108 +9,45 @@ class core extends CI_Controller
         $this->load->model('Model_login');
     }
 
-    function lg_su()
-    {
-        if(isset($_POST['submit']))
-        {
-            
-            $username   =   $this->input->post('username',true);
-            $password   =   md5($this->input->post('password',true));
-            $hasil      =   $this->Model_login->lg_super_admin($username,$password);
-            
-            if($hasil)
-            {
-                $this->session->set_userdata('status_login',$username);
-                redirect(base_url(). "index.php/su_admin/in_suadmin");
-            }
-            else
-            {
-                $this->session->set_userdata('notif',"<br>USERNAME ATAU PASSWORD ADA YANG SALAH");
-                redirect();
-            }
-        }
-        else
-        {
-            $this->load->view(form_login);
-        }
-    }
-
-    function logout_su()
-    {
-        $username   =   $this->session->userdata('status_login');
-                        $this->Model_login->logout_super_admin($username);
-                        $this->session->sess_destroy();
-
-        redirect('Welcome/index_su');
-    }
-
-    function login_kar()
+    function login()
     {
         if(isset($_POST['submit']))
         {
             $username   =   $this->input->post('username',true);
             $password   =   md5($this->input->post('password',true));
-            $hasil      =   $this->Model_login->login_karyawan($username, $password);
+            $hasil      =   $this->Model_login->login($username, $password);
 
-            if($hasil)
+            if($hasil == 1)
             {
-                redirect(base_url(). "index.php/karyawan/in_kar");
+                $this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert"><button type="button" class="close sucess-op" data-dismiss="alert" aria-label="Close">
+				<span class="icon-sc-cl" aria-hidden="true">x</span></button>Login Berhasil</div>');
+                redirect(base_url(). "Home/home_admin");
             }
+            elseif($hasil == 2 OR $hasil == 3)
+            {
+                $this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert"><button type="button" class="close sucess-op" data-dismiss="alert" aria-label="Close">
+				<span class="icon-sc-cl" aria-hidden="true">x</span></button>Login Berhasil</div>');
+                redirect(base_url(). "Home/home_user");
+            } 
             else
             {
-                $this->session->set_userdata('notif',"<br>USERNAME ATAU PASSWORD ADA YANG SALAH");
-                redirect();
+                $this->session->set_userdata('notif','<br><br><div class="alert alert-danger" role="alert">USERNAME ATAU PASSWORD ADA YANG SALAH</div>');
+                redirect(base_url(). "Login/login");
             }
         }
         else
         {
-            $this->load->view(form_login);
+            $this->session->set_userdata('notif','<br><br><div class="alert alert-danger" role="alert">Gagal Login!!!</div>');
+            redirect(base_url(). "Login/login");
         }
     }
 
-    function logout_kar()
+    function logout()
     {
         $username   =   $this->session->userdata('status_login');
-                        $this->Model_login->logout_karyawan($username);
-                        $this->session->sess_destroy();
-
-        redirect();
-    }
-
-    function lg_admin()
-    {
-        if(isset($_POST['submit']))
-        {
-            
-            $username   =   $this->input->post('username',true);
-            $password   =   md5($this->input->post('password',true));
-            $hasil      =   $this->Model_login->lg_admin($username,$password);
-            
-            if($hasil)
-            {
-                $this->session->set_userdata('status_login',$username);
-                redirect(base_url(). "index.php/admin/in_admin");
-            }
-            else
-            {
-                $this->session->set_userdata('notif',"<br>USERNAME ATAU PASSWORD ADA YANG SALAH");
-                redirect();
-            }
-        }
-        else
-        {
-            $this->load->view(form_login);
-        }
-    }
-
-    function logout_admin()
-    {
-        $username   =   $this->session->userdata('status_login');
-                        $this->Model_login->logout_admin($username);
-                        $this->session->sess_destroy();
-
-        redirect('Welcome/index_admin');
+                        $this->Model_login->logout($username);
+                        $this->session->set_flashdata('pesan', '<div class="alert alert-success" role="alert"><button type="button" class="close sucess-op" data-dismiss="alert" aria-label="Close">
+                        <span class="icon-sc-cl" aria-hidden="true">x</span></button> Loguot Berhasil, Terima Kasih </div>');
+        redirect(base_url(). "Login/login");
     }
 }
-
-?>
